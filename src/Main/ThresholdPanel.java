@@ -34,21 +34,21 @@ public class ThresholdPanel extends JPanel {
 		String dir = System.getProperty("user.dir");
 
 		try {
-			loadImage = ImageIO.read(new File(dir + "\\open.png"));
+			loadImage = ImageIO.read(new File("open.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		try {
-			convertImage = ImageIO.read(new File(dir + "\\donustur.png"));
+			convertImage = ImageIO.read(new File("donustur.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		try {
-			thresholdImage = ImageIO.read(new File(dir + "\\17_histogram.png"));
+			thresholdImage = ImageIO.read(new File("17_histogram.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,6 +75,9 @@ public class ThresholdPanel extends JPanel {
 			Image copyOrginalImage = null;
 			JLabel grayPicLabel;
 			JLabel picLabel = null;
+			ImageBasicProces imgBasicPrcs = null;
+			BufferedImage grayBuffered = null;
+			BufferedImage thresholdPicBuffered = null;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -123,8 +126,8 @@ public class ThresholdPanel extends JPanel {
 				else if (e.getSource() == convertGrayButton) {
 
 					copyOrginalImage = new Image("srcImage.jpg");
-					BufferedImage grayBuffered = null;
-					ImageBasicProces imgBasicPrcs = new ImageBasicProces(
+
+					imgBasicPrcs = new ImageBasicProces(
 							copyOrginalImage.getOriginalBufferedImage(),
 							copyOrginalImage.getWidth(),
 							copyOrginalImage.getHeight());
@@ -140,7 +143,23 @@ public class ThresholdPanel extends JPanel {
 				}
 
 				else if (e.getSource() == thresholdButton) {
-					System.out.print("thresholdButton");
+
+					copyOrginalImage
+							.saveThreshold(imgBasicPrcs
+									.OtsuThreshold(imgBasicPrcs
+											.Histogram(grayBuffered)));
+					try {
+						thresholdPicBuffered = ImageIO.read(new File(
+								"Threshold.jpg"));
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					JLabel picThresholdLabel = new JLabel(new ImageIcon(
+							thresholdPicBuffered));
+					picThresholdLabel.setBounds(500, 50, 500, 500);
+					add(picThresholdLabel);
+					repaint();
 
 				}
 			}

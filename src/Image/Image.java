@@ -31,6 +31,14 @@ public class Image {
 
 		width = srcImage.getWidth();
 		height = srcImage.getHeight();
+
+		Raster raster = srcImage.getData();
+		DataBuffer buffer = raster.getDataBuffer();
+		DataBufferByte byteBuffer = (DataBufferByte) buffer;
+
+		pixelDataByteArray = new byte[width * height];
+		pixelDataByteArray = byteBuffer.getData(0);
+
 	}
 
 	public int getWidth() {
@@ -43,13 +51,6 @@ public class Image {
 	}
 
 	public int[][] getPixelData() {
-
-		Raster raster = srcImage.getData();
-		DataBuffer buffer = raster.getDataBuffer();
-		DataBufferByte byteBuffer = (DataBufferByte) buffer;
-
-		pixelDataByteArray = new byte[width * height];
-		pixelDataByteArray = byteBuffer.getData(0);
 
 		int t = 0;
 		for (int i = 0; i < height; i++) {
@@ -64,6 +65,10 @@ public class Image {
 
 	public BufferedImage getOriginalBufferedImage() {
 		return srcImage;
+	}
+
+	public byte[] getByteData() {
+		return pixelDataByteArray;
 	}
 
 	public void saveImage() {
@@ -88,7 +93,19 @@ public class Image {
 
 	}
 
-	public void saveThreshold() {
+	public void saveThreshold(BufferedImage bufferedThresholdImage) {
+		Raster rasterGray = bufferedThresholdImage.getData();
+		DataBuffer buffer = rasterGray.getDataBuffer();
+		DataBufferByte byteBuffer = (DataBufferByte) buffer;
 
+		byte[] bs = new byte[width * height];
+		bs = byteBuffer.getData(0);
+		try {
+			ImageIO.write(bufferedThresholdImage, "jpg", new File(
+					"Threshold.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
