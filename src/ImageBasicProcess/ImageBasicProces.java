@@ -148,4 +148,47 @@ public class ImageBasicProces {
 		return thresholImage;
 
 	}
+
+	public int[][] Gaus(int[][] pixelValues) {
+		int[][] Gaus_dizisi = { { 2, 4, 5, 4, 2 }, { 4, 9, 12, 9, 4 },
+				{ 5, 12, 15, 12, 5 }, { 4, 9, 12, 9, 4 }, { 2, 4, 5, 4, 2 } };
+
+		int[][] bufferedPixelValues = new int[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+
+				bufferedPixelValues[i][j] = pixelValues[i][j];
+			}
+		}
+
+		int t = 0;
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				float yeni_deger = 0;
+				for (int k = -2; k < 3; k++) {
+					for (int l = -2; l < 3; l++) {
+						int a = (i + k);
+						int b = (j + l);
+						int c = (2 + k);
+						int d = (2 + l);
+						if (a < height && a >= 0 && b < width && b >= 0) {
+							yeni_deger = yeni_deger
+									+ ((bufferedPixelValues[a][b] * Gaus_dizisi[c][d]) / 115);
+
+						} else {
+							continue;
+						}
+					}
+				}
+
+				if (yeni_deger > 255) {
+					yeni_deger = 255;
+				}
+				pixelValues[i][j] = (int) yeni_deger;
+				t++;
+			}
+		}
+		return pixelValues;
+
+	}
 }

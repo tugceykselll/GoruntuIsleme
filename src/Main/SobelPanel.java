@@ -17,19 +17,19 @@ import javax.swing.filechooser.FileFilter;
 import Image.Image;
 import ImageBasicProcess.ImageBasicProces;
 
-@SuppressWarnings("serial")
-public class ThresholdPanel extends JPanel {
+public class SobelPanel extends JPanel {
 	BufferedImage loadImage;
 	BufferedImage convertImage;
 	BufferedImage thresholdImage;
 	BufferedImage beforeImage;
+	BufferedImage gausImage;
 
-	public ThresholdPanel(final InnerClass context) {
+	public SobelPanel(final InnerClass context) {
 		// TODO Auto-generated constructor stub
-
 		final JButton loadImageButton = new JButton("Resim Yükle");
 		final JButton convertGrayButton = new JButton("Gray Scale Yap ");
-		final JButton thresholdButton = new JButton("Otsu Threshold Uygula");
+		final JButton gausButton = new JButton("Gaus Uygula");
+		final JButton sobelButton = new JButton("Sobel Uygula");
 		final JButton beforeButton = new JButton("Geri Dön");
 		String dir = System.getProperty("user.dir");
 		try {
@@ -47,7 +47,7 @@ public class ThresholdPanel extends JPanel {
 		}
 
 		try {
-			thresholdImage = ImageIO.read(new File("17_histogram.png"));
+			thresholdImage = ImageIO.read(new File("derivative.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,24 +60,35 @@ public class ThresholdPanel extends JPanel {
 			e2.printStackTrace();
 		}
 
+		try {
+			gausImage = ImageIO.read(new File("gaus.jpg"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		loadImageButton.setIcon(new ImageIcon(loadImage));
 		loadImageButton.setVisible(true);
 
 		convertGrayButton.setIcon(new ImageIcon(convertImage));
 		convertGrayButton.setVisible(true);
 
-		thresholdButton.setIcon(new ImageIcon(thresholdImage));
-		thresholdButton.setVisible(true);
+		sobelButton.setIcon(new ImageIcon(thresholdImage));
+		sobelButton.setVisible(true);
 
 		beforeButton.setIcon(new ImageIcon(beforeImage));
 		beforeButton.setVisible(true);
 
+		gausButton.setIcon(new ImageIcon(gausImage));
+		gausButton.setVisible(true);
+
 		add(loadImageButton);
 		add(convertGrayButton);
-		add(thresholdButton);
+		add(gausButton);
+		add(sobelButton);
 		add(beforeButton);
 
-		ActionListener actionListener = new ActionListener() {
+		ActionListener listener = new ActionListener() {
 			Image orginalImage = null;
 			Image copyOrginalImage = null;
 			JLabel grayPicLabel;
@@ -92,6 +103,7 @@ public class ThresholdPanel extends JPanel {
 				// TODO Auto-generated method stub
 
 				if (e.getSource() == loadImageButton) {
+
 					JFileChooser jfc = new JFileChooser();
 
 					jfc.setFileFilter(new FileFilter() {
@@ -118,16 +130,16 @@ public class ThresholdPanel extends JPanel {
 					int kullaniciSecimi = jfc.showOpenDialog(null);
 
 					if (kullaniciSecimi == JFileChooser.APPROVE_OPTION) {
-						if (picLabel != null) {
-							remove(picLabel);
-						}
-						if (grayPicLabel != null) {
-							remove(grayPicLabel);
-
-						}
-						if (picThresholdLabel != null) {
-							remove(picThresholdLabel);
-						}
+						// if (picLabel != null) {
+						// remove(picLabel);
+						// }
+						// if (grayPicLabel != null) {
+						// remove(grayPicLabel);
+						//
+						// }
+						// if (picThresholdLabel != null) {
+						// remove(picThresholdLabel);
+						// }
 						String dirImage = jfc.getSelectedFile().toString();
 						BufferedImage pic = null;
 
@@ -139,9 +151,8 @@ public class ThresholdPanel extends JPanel {
 						add(picLabel);
 						repaint();
 					}
-				}
 
-				else if (e.getSource() == convertGrayButton) {
+				} else if (e.getSource() == convertGrayButton) {
 
 					copyOrginalImage = new Image("srcImage.jpg");
 
@@ -160,36 +171,38 @@ public class ThresholdPanel extends JPanel {
 
 				}
 
-				else if (e.getSource() == thresholdButton) {
+				else if (e.getSource() == gausButton) {
+					copyOrginalImage = new Image("grayImage.jpg");
 
-					copyOrginalImage
-							.saveThreshold(imgBasicPrcs
-									.OtsuThreshold(imgBasicPrcs
-											.Histogram(grayBuffered)));
-					try {
-						thresholdPicBuffered = ImageIO.read(new File(
-								"Threshold.jpg"));
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					picThresholdLabel = new JLabel(new ImageIcon(
-							thresholdPicBuffered));
-					picThresholdLabel.setBounds(500, 50, 500, 500);
-					add(picThresholdLabel);
-					repaint();
+					imgBasicPrcs = new ImageBasicProces(
+							copyOrginalImage.getOriginalBufferedImage(),
+							copyOrginalImage.getWidth(),
+							copyOrginalImage.getHeight());
+					copyOrginalImage.saveGrayScaleIntArray(imgBasicPrcs
+							.Gaus(copyOrginalImage.getPixelData()));
+
+					// grayPicLabel = new JLabel(new ImageIcon(grayBuffered));
+					// grayPicLabel.setBounds(25, 50, 500, 500);
+					// remove(picLabel);
+					// add(grayPicLabel);
+					// repaint();
+
+				} else if (e.getSource() == sobelButton) {
+
+				} else if (e.getSource() == beforeButton) {
+					context.ThresholdBack(1);
 
 				}
 
-				else if (e.getSource() == beforeButton) {
-
-					context.ThresholdBack(0);
-				}
 			}
 		};
-		beforeButton.addActionListener(actionListener);
-		thresholdButton.addActionListener(actionListener);
-		convertGrayButton.addActionListener(actionListener);
-		loadImageButton.addActionListener(actionListener);
+
+		gausButton.addActionListener(listener);
+		loadImageButton.addActionListener(listener);
+		convertGrayButton.addActionListener(listener);
+		sobelButton.addActionListener(listener);
+		beforeButton.addActionListener(listener);
+
 	}
+
 }

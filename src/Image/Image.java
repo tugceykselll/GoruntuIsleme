@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -38,7 +39,7 @@ public class Image {
 
 		pixelDataByteArray = new byte[width * height];
 		pixelDataByteArray = byteBuffer.getData(0);
-
+		pixelDataInt = new int[height][width];
 	}
 
 	public int getWidth() {
@@ -103,6 +104,40 @@ public class Image {
 		try {
 			ImageIO.write(bufferedThresholdImage, "jpg", new File(
 					"Threshold.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void saveGrayScaleIntArray(int[][] pixelValuesSave) {
+		byte[] pixelDataByteArraySave = new byte[height * width];
+
+		int t = 0;
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+
+				pixelDataByteArraySave[t] = (byte) pixelValuesSave[i][j];
+				t++;
+			}
+		}
+
+		BufferedImage grayScaleIntArray = new BufferedImage(width, height,
+				BufferedImage.TYPE_BYTE_GRAY);
+
+		WritableRaster raster = grayScaleIntArray.getRaster();
+
+		t = 0;
+
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				raster.setSample(j, i, 0, (0xFF & pixelDataByteArraySave[t]));
+				t++;
+			}
+		}
+
+		try {
+			ImageIO.write(grayScaleIntArray, "jpg", new File("GausSave.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
